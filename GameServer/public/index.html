@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Labyrinthus</title>
+  <script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
+  <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v3.12.4/dist/aframe-extras.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
+  <script src="components/tilt-menu.js"></script>
+  <script src="components/fire-light.js"></script>
+  <script src="components/networked-entity.js"></script>
+  <script src="utils/randInt.js"></script>
+</head>
+<body>
+<a-scene id="scene" shadow="type: pcfsoft">
+  <a-assets>
+    <img id="rockWall" src="textures/rockWall.png">
+    <a-asset-item id="shroom-obj" src="textures/shroom.obj"></a-asset-item>
+    <a-asset-item id="shroom-mtl" src="textures/shroom.mtl"></a-asset-item>
+    <a-mixin id="rock" static-body material="src: #rockWall; roughness: 1; metalness: 0" shadow="receive: true; cast: true;"></a-mixin>
+  </a-assets>
+  <!-- Player -->
+  <a-entity id="player"
+            camera
+            universal-controls="movementEnabled: true"
+            static-body
+            position="0 1.764 0"
+  >
+    <a-entity cursor="maxDistance: 75"
+              position="0 0 -0.1"
+              geometry="primitive: circle; radius: 0.001; segments: 4;"
+              material="color: #FF4444; shader: flat"></a-entity>
+    <a-entity fire-light></a-entity>
+  </a-entity>
+
+  <a-entity id="shroom-el" obj-model="obj: #shroom-obj" scale="0.5 0.5 0.5" material="color: #99ffff; transparent: true; opacity: 0.5;">
+    <a-entity light="type: point; intensity: 0.5; distance: 10; decay: 1; color: #99ffff; castShadow: true" position="0 1.5 0"></a-entity>
+  </a-entity>
+
+  <a-plane mixin="rock" width="1000" height="1000" rotation="-90 0 0" material="src: #rockWall; repeat: 250 250; roughness: 1; metalness: 0"></a-plane>
+  <a-plane mixin="rock" width="1000" height="1000" rotation="90 0 0" position="0 4 0" material="src: #rockWall; repeat: 250 250; roughness: 1; metalness: 0"></a-plane>
+  <a-sky color="#000"></a-sky>
+</a-scene>
+<script src="client.js"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Maze Gen Test</title>
+</head>
+<body>
+  <canvas id="display"></canvas>
+  <script>
+    const mapSize = 100;
+    let canvas = document.getElementById('display');
+    canvas.width = 500;
+    canvas.height = 500;
+    let context = canvas.getContext('2d');
+
+    function get(url){
+      return new Promise((resolve, reject) => {
+        const req = new XMLHttpRequest();
+        req.addEventListener("load", event => {
+          resolve({request:req, event});
+        });
+        req.addEventListener("error", event => {
+          resolve({request:req, event, error: true});
+        });
+        req.open("GET", url);
+        req.send();
+      });
+    }
+
+    function cleanUpMaze(maze){
+      let size = maze.length;
+      for(let i=0; i < size; i++){
+        maze[0][i] = true;
+        maze[i][0] = true;
+        maze[size-1][i] = true;
+        maze[i][size-1] = true;
+      }
+      return maze
+        .map((row, y) =>
+          row.map((tile, x) =>
+            ({x,y,wall:tile === true,start: tile === '#ee0000'})
+          )
+        );
+    }
+
+    get(`http://localhost:3000/maze?json=true&size=${mapSize}`).then(responseObj => {
+      if(!responseObj.error) {
+        let maze = JSON.parse(responseObj.request.response);
+
+        //maze = cleanUpMaze(maze);
+
+        let blockSize = canvas.width / maze.length;
+        maze.forEach((row, y) => row.forEach((tile, x) => {
+          context.fillStyle = tile
+            ? tile === true ? '#000' : tile
+            : '#fff';
+          context.fillRect(x*blockSize, y*blockSize, blockSize, blockSize);
+        }));
+      }
+    });
+  </script>
+</body>
+</html>
