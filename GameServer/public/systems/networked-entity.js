@@ -1,13 +1,19 @@
 AFRAME.registerSystem('networked-entity', {
   schema: {},
   init: function () {
+    this.updatableAttrs = {
+      position: true,
+      rotation: true
+    };
     this.threshold = 0.01;
     this.entities = {};
     this.entityData = {};
     this.networkedEntities = {};
     this.socket = io('http://yukiironite.me:3005');
 
-    this.socket.on(update, this.updateEntity);
+    this.socket.on('addEntity', this.addNetworkedEntity);
+    this.socket.on('update', this.updateEntity);
+    this.socket.on('removeEntity', this.removeNetworkedEntity);
   },
   tick: function () {
     Object.keys(this.entities)
@@ -16,6 +22,8 @@ AFRAME.registerSystem('networked-entity', {
         const position = entity.getAttribute('position');
         const rotation = entity.getAttribute('rotation');
         return {
+          id: entity.id,
+          type: entity.type,
           position,
           rotation,
           positionChanged: this.vectorChanged(position, entity.id, 'position'),
@@ -23,8 +31,8 @@ AFRAME.registerSystem('networked-entity', {
         }
       })
       .filter(({positionChanged, rotationChanged}) => positionChanged || rotationChanged)
-      .forEach(({position, rotation}) => {
-        const updateObj = { position, rotation };
+      .forEach(({ id, type, position, rotation}) => {
+        const updateObj = { id, type, position, rotation };
         this.socket.emit('update', updateObj);
       })
   },
@@ -32,17 +40,23 @@ AFRAME.registerSystem('networked-entity', {
   play: function () {},
   addEntity(entity) {
     this.entities[entity.id] = entity;
+    this.socket.emit('addEntity', entity);
   },
-  updateEntity(updateObj) {
-
+  updateEntity(entity) {
+    const entityEl = this.networkedEntities[entity.socketId][entity.id];
+    Object.keys(entity)
+      .map(key => ({key, value: entity[key]}))
+      .filter(({key}) => this.updatableAttrs[key])
+      .forEach(({key, value}) => entityEl.setAttribute(key, value));
   },
   removeEntity(entity) {
     delete this.entities[entity.id];
+    this.socket.emit('removeEntity', entity);
   },
-  addNetworkedEntity() {
+  addNetworkedEntity(entity) {
 
   },
-  removeNetworkedEntity() {
+  removeNetworkedEntity(entity) {
 
   },
   vectorChanged(vector, id, type) {
