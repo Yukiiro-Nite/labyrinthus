@@ -51,8 +51,8 @@
 
         let blockSize = canvas.width / maze.length;
         maze.forEach((row, y) => row.forEach((tile, x) => {
-          context.fillStyle = tile
-            ? tile === true ? '#000' : tile
+          context.fillStyle = tile.wall
+            ? '#000'
             : '#fff';
           context.fillRect(x*blockSize, y*blockSize, blockSize, blockSize);
         }));
