@@ -13,7 +13,7 @@ class LogicGraph extends EventEmitter {
         if(prop.startsWith('set') || prop.startsWith('remove')) {
           let oldFn = graphFn;
           graphFn = function() {
-            const result = oldFn.apply(arguments);
+            const result = oldFn.apply(graph, arguments);
             context.emit(prop, ...arguments);
             return result;
           }
