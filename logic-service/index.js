@@ -54,6 +54,6 @@ logicGraph.on('setEdge', (v, w, value) => {
   console.log(`setEdge ${v} -> ${w}: ${JSON.stringify(value)}`);
 });
 
-logicGraph.start();
+logicGraph.setInput([true, true, true]);
 
-// edges aren't being set properly.. need to fix.
+logicGraph.start();

@@ -30,7 +30,11 @@ class LogicGraph extends EventEmitter {
     return this.findNodes(({name}) => name.startsWith(INPUT));
   }
   setInput(data) {
-
+    data.forEach((state, index) => {
+      let nodeName = `${INPUT}${index}`;
+      let node = this.node(nodeName);
+      this.setNode(nodeName, { ...node, state })
+    })
   }
   getOutput() {
 
@@ -43,16 +47,14 @@ class LogicGraph extends EventEmitter {
       case node.name.startsWith(OUTPUT):
         this.setNode(node.name, {
           ...node.value,
-          state: edges.reduce((acc, edge) => acc || edge.value, false)
+          state: edges.reduce((acc, edge) => acc || edge.state, false)
         });
         break;
       case node.name.startsWith(PROCESS_NODE):
-        console.log(`Src edges for ${node.name}: `, edges);
         let edgeState = edges.reduce((acc, edge) => {
-          acc[edge.type] = acc[edge.type] || edge.value;
+          acc[edge.type] = acc[edge.type] || edge.state;
           return acc;
         }, {});
-        console.log(`Want to set ${node.name} to ${JSON.stringify(edgeState)}`);
         this.setNode(node.name, {
           ...node.value,
           state: edgeState.control && edgeState.src
