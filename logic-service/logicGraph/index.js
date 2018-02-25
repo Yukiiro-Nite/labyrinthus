@@ -1,31 +1,7 @@
-const Graph = require('graphlib').Graph;
-const EventEmitter = require('events');
+const EmitterGraph = require('emitter-graph');
 const { INPUT, OUTPUT, PROCESS_NODE } = require('./constants');
 
-class LogicGraph extends EventEmitter {
-  constructor(name, prebuiltGraph) {
-    super();
-    const graph = prebuiltGraph || new Graph();
-    const context = this;
-    Object.keys(Object.getPrototypeOf(graph)).forEach(prop => {
-      if(graph[prop] instanceof Function) {
-        let graphFn = graph[prop].bind(graph);
-        if(prop.startsWith('set') || prop.startsWith('remove')) {
-          let oldFn = graphFn;
-          graphFn = function() {
-            const result = oldFn.apply(graph, arguments);
-            context.emit(prop, ...arguments);
-            return result;
-          }
-        }
-        context[prop] = graphFn;
-      }
-    });
-    graph.setGraph(name);
-  }
-  findNodes(filterFunction) {
-    return this.nodes().map((name) => ({name, value: this.node(name)})).filter(filterFunction);
-  }
+class LogicGraph extends EmitterGraph {
   getInputs() {
     return this.findNodes(({name}) => name.startsWith(INPUT));
   }
@@ -36,30 +12,37 @@ class LogicGraph extends EventEmitter {
       this.setNode(nodeName, { ...node, state })
     })
   }
-  getOutput() {
-
+  getOutputs() {
+    return this.findNodes(({name}) => name.startsWith(OUTPUT))
+  }
+  getOutputState() {
+    return this.getOutputs()
+      .sort((a,b) => a.name.localeCompare(b.name))
+      .map(({value}) => value.state);
   }
   updateNode(node) {
     const predecessors = node.predecessors || this.predecessors(node.name);
     const edges = predecessors.map(name => this.edge(name, node.name));
-    switch (true) {
-      case node.name.startsWith(INPUT):
-      case node.name.startsWith(OUTPUT):
-        this.setNode(node.name, {
-          ...node.value,
-          state: edges.reduce((acc, edge) => acc || edge.state, false)
-        });
-        break;
-      case node.name.startsWith(PROCESS_NODE):
-        let edgeState = edges.reduce((acc, edge) => {
-          acc[edge.type] = acc[edge.type] || edge.state;
-          return acc;
-        }, {});
-        this.setNode(node.name, {
-          ...node.value,
-          state: edgeState.control && edgeState.src
-        });
-        break;
+    if( edges.length > 0 ) {
+      switch (true) {
+        case node.name.startsWith(INPUT):
+        case node.name.startsWith(OUTPUT):
+          this.setNode(node.name, {
+            ...node.value,
+            state: edges.reduce((acc, edge) => acc || edge.state, false)
+          });
+          break;
+        case node.name.startsWith(PROCESS_NODE):
+          let edgeState = edges.reduce((acc, edge) => {
+            acc[edge.type] = acc[edge.type] || edge.state;
+            return acc;
+          }, {});
+          this.setNode(node.name, {
+            ...node.value,
+            state: edgeState.control && edgeState.src
+          });
+          break;
+      }
     }
   }
   updateOutput(node) {

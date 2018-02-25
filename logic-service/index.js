@@ -42,18 +42,17 @@ function createOrGraph() {
   return OR;
 }
 
-function main(graph, value) {
-  graph.node(MAIN_IN).value = value;
-}
-
 let logicGraph = new LogicGraph("testAnd", createAndGraph());
-logicGraph.on('setNode', (name, value)  => {
-  console.log(`setNode ${name}: ${JSON.stringify(value)}`);
-});
-logicGraph.on('setEdge', (v, w, value) => {
-  console.log(`setEdge ${v} -> ${w}: ${JSON.stringify(value)}`);
-});
-
 logicGraph.setInput([true, true, true]);
+
+logicGraph.on('setNode', (name, value)  => {
+  // console.log(`setNode ${name}: ${JSON.stringify(value)}`);
+  if(name.startsWith(OUTPUT)) {
+    console.log(`${name}: ${value.state}`);
+  }
+});
+// logicGraph.on('setEdge', (v, w, value) => {
+//   console.log(`setEdge ${v} -> ${w}: ${JSON.stringify(value)}`);
+// });
 
 logicGraph.start();
