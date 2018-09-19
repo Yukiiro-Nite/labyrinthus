@@ -67,7 +67,7 @@ player.addEventListener('componentchanged', function(event){
 });
 
 var updatePosition = function(position){
-  console.log('updating position');
+  // console.log('updating position');
   socket.emit('move', {position:position});
 };
 
@@ -117,7 +117,8 @@ function createWorld(mapData) {
 }
 
 function createTile(x, y, tile) {
-  if (tile.start) {
+  if (tile.isStart) {
+    console.log('Found start: ', x, y);
     player.setAttribute('position', {x: x * 4, y: 1.764, z: y * 4});
     shroom.setAttribute('position', {x: x * 4, y: 0, z: y * 4});
   } else if (tile.wall) {
