@@ -1,18 +1,20 @@
 <!DOCTYPE html>
+<!--Pay no mind to some of the older code styles here, I wrote a lot of this code several years ago.-->
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Labyrinthus</title>
-  <script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
-  <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v3.12.4/dist/aframe-extras.min.js"></script>
+  <script src="https://aframe.io/releases/0.8.2/aframe.min.js"></script>
+  <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.3/dist/aframe-extras.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
   <script src="components/tilt-menu.js"></script>
   <script src="components/fire-light.js"></script>
+  <script src="systems/networked-system.js"></script>
   <script src="components/networked-entity.js"></script>
   <script src="utils/randInt.js"></script>
 </head>
 <body>
-<a-scene id="scene" shadow="type: pcfsoft">
+<a-scene id="scene" shadow="type: pcfsoft" networked-entity>
   <a-assets>
     <img id="rockWall" src="textures/rockWall.png">
     <a-asset-item id="shroom-obj" src="textures/shroom.obj"></a-asset-item>
@@ -20,18 +22,18 @@
     <a-mixin id="rock" static-body material="src: #rockWall; roughness: 1; metalness: 0" shadow="receive: true; cast: true;"></a-mixin>
   </a-assets>
   <!-- Player -->
-  <a-entity id="player"
-            camera
-            universal-controls="movementEnabled: true"
-            static-body
+  <a-camera id="player"
             position="0 1.764 0"
+            rotation="0 0 0"
+            networked-entity
   >
-    <a-entity cursor="maxDistance: 75"
-              position="0 0 -0.1"
-              geometry="primitive: circle; radius: 0.001; segments: 4;"
-              material="color: #FF4444; shader: flat"></a-entity>
+    <!--<a-entity cursor="maxDistance: 75"-->
+              <!--position="0 0 -0.1"-->
+              <!--geometry="primitive: circle; radius: 0.001; segments: 4;"-->
+              <!--material="color: #FF4444; shader: flat"></a-entity>-->
     <a-entity fire-light></a-entity>
-  </a-entity>
+    <!--<a-entity light="type: point; intensity: 0.75; distance: 20; decay: 2"></a-entity>-->
+  </a-camera>
 
   <a-entity id="shroom-el" obj-model="obj: #shroom-obj" scale="0.5 0.5 0.5" material="color: #99ffff; transparent: true; opacity: 0.5;">
     <a-entity light="type: point; intensity: 0.5; distance: 10; decay: 1; color: #99ffff; castShadow: true" position="0 1.5 0"></a-entity>

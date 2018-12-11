@@ -4,12 +4,15 @@
   "description": "server for the maze game's mechanics and gameplay",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
     "test": "node test.js"
   },
   "author": "Michael.Bryant",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.15.2",
-    "socket.io": "^1.7.3"
+    "date-fns": "^1.29.0",
+    "express-starter": "git+https://github.com/Yukiiro-Nite/express-starter.git",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
   }
 }

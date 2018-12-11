@@ -1,7 +1,9 @@
 const PnumaticGraph = require('./index');
 
 function generateGraph(obj, graph) {
-
+  graph.setGraph(obj.name);
+  obj.nodes.forEach(node => graph.setNode(node.name, node.value));
+  obj.edges.forEach(edge => graph.setEdge(edge.v, edge.w, edge.value));
 }
 
 const testGraph = new PnumaticGraph();
@@ -21,6 +23,7 @@ generateGraph({
     { v: 'valve_1', w: 'valve_2', value: { dst: 'input'} },
     { v: 'valve_2', w: 'output_tank', value: {} },
     { v: 'control_tank_1', w: 'valve_1', value: { dst: 'control'} },
-    { v: 'control_tank_2', w: 'valve_2', value: { dst: 'control'} },
+    { v: 'control_tank_2', w: 'valve_2', value: { dst: 'control'} }
   ]
 }, testGraph);
+

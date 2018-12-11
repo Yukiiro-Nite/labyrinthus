@@ -21,4 +21,6 @@
 - when a valve gets a control input, the valve will use up some amount of the input to maintain the state
 - if a valve does not receive enough input, it will switch to it's default state
 - a valve has a min and max bandwidth for flow
-- a valve can have directed or omni directional flow
+- a valve can have directed or omni directional flow (I should make valves directed first)
+- a valve's flow could be analog, dependant on the proportion of input
+- valves could have durability, which could impact how they work and when they break
