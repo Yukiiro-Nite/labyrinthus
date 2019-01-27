@@ -56,3 +56,16 @@
   - https://github.com/joewalnes/websocketd
   - could write PGS processor in a very efficiant language
   - would be very easy to parallelize
+- PGS would have 3 kinds of data
+  - structure
+    - what parts are connected to what
+    - this won't change often
+  - state
+    - how full are the tanks
+    - how open are the valves
+    - this will change very often
+  - asthetic
+    - this one is least important, not required for functionality
+    - what are the orientations of parts
+    - what color are the parts
+    - this won't change often
